@@ -4,124 +4,79 @@
 <meta charset="UTF-8">
 <title>Circle explorer: radius, diameter, circumference, area</title>
 <style>
-  body {
-    margin: 0;
-    padding: 32px;
-    background: #191919;
-    color: #e6e6e4;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  }
-  .wrap { max-width: 560px; margin: 0 auto; }
-  .intro { font-size: 14px; line-height: 1.6; color: #d0d0ce; margin: 0 0 20px; }
-  .row { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-  .stat { background: #2f2f2f; border-radius: 8px; padding: 16px; }
-  .stat p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 4px; }
-  .stat p:last-child { font-size: 20px; font-weight: 600; margin: 0; }
-  .grid { flex: 1; min-width: 220px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .grid .span2 { grid-column: span 2; }
-  label { font-size: 14px; color: #9b9b9b; min-width: 50px; }
-  input[type=range] { flex: 1; accent-color: #7f77dd; }
-  #r-out { font-size: 14px; font-weight: 600; min-width: 40px; text-align: right; }
-  .slider-row { display: flex; align-items: center; gap: 12px; margin: 20px 0 6px; }
-  .r-caption { font-size: 13px; color: #9b9b9b; margin: 0 0 20px; line-height: 1.5; }
-  .formulas { max-width: 560px; margin: 0 auto 8px; background: #2f2f2f; border-radius: 8px; padding: 16px 20px; }
-  .formulas p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 10px; }
-  .formulas ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
-  .formulas li { font-size: 15px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
-  .formula-key { font-size: 13px; color: #9b9b9b; line-height: 1.8; margin: 0 0 20px; padding-left: 4px; }
-  .formula-key b { color: #e6e6e4; font-weight: 600; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
-  .pi-explain { max-width: 560px; margin: 0 auto; background: #2f2f2f; border-radius: 8px; padding: 16px 20px; }
-  .pi-explain p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 8px; }
-  .pi-explain .pi-value { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
-  .pi-explain .pi-line { font-size: 14px; line-height: 1.6; margin: 0; color: #d0d0ce; }
-  .pi-explain .pi-line span { font-weight: 600; color: #e6e6e4; }
+body{margin:0;padding:32px;background:#191919;color:#e6e6e4;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto}
+.intro{font-size:14px;line-height:1.6;color:#d0d0ce;margin:0 0 20px}
+.row{display:flex;gap:32px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.stat{background:#2f2f2f;border-radius:8px;padding:16px}
+.stat p:first-child{font-size:13px;color:#9b9b9b;margin:0 0 4px}
+.stat p:last-child{font-size:20px;font-weight:600;margin:0}
+.grid{flex:1;min-width:220px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.span2{grid-column:span 2}
+label{font-size:14px;color:#9b9b9b;min-width:50px}
+input[type=range]{flex:1;accent-color:#7f77dd}
+#r-out{font-size:14px;font-weight:600;min-width:40px;text-align:right}
+.slider-row{display:flex;align-items:center;gap:12px;margin:20px 0 6px}
+.r-caption{font-size:13px;color:#9b9b9b;margin:0 0 20px;line-height:1.5}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.formulas,.pi-explain{background:#2f2f2f;border-radius:8px;padding:16px 20px}
+.formulas p:first-child,.pi-explain p:first-child{font-size:13px;color:#9b9b9b;margin:0 0 10px}
+.formulas ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}
+.formulas li{font-size:15px;font-family:ui-monospace,monospace}
+.formula-key{font-size:13px;color:#9b9b9b;line-height:1.8;margin:16px 0 0}
+.formula-key b{color:#e6e6e4}
+.pi-value{font-size:22px;font-weight:600;margin:0 0 10px}
+.pi-line{font-size:14px;line-height:1.6;color:#d0d0ce;margin:0}
+.pi-line span{font-weight:600;color:#fff}
+@media(max-width:700px){.info-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <p class="intro">A circle can be described by just a few measurements. This tool lets you resize a circle and watch how those measurements relate to each other, and to π (pi).</p>
+<p class="intro">A circle can be described by just a few measurements. This tool lets you resize a circle and watch how those measurements relate to each other, and to π (pi).</p>
+<div class="row">
+<svg width="220" height="220" viewBox="0 0 220 220">
+<circle id="circ" cx="110" cy="110" r="80" fill="none" stroke="#7f77dd" stroke-width="2"/>
+<line id="rline" x1="110" y1="110" x2="190" y2="110" stroke="#e6e6e4" stroke-width="1.5"/>
+<circle cx="110" cy="110" r="3" fill="#e6e6e4"/><g id="ticks"></g>
+</svg>
+<div class="grid">
+<div class="stat"><p>Diameter</p><p id="d-out">160</p></div>
+<div class="stat"><p>Circumference</p><p id="c-out">502.65</p></div>
+<div class="stat span2"><p>Area</p><p id="a-out">20106.19</p></div>
+</div></div>
+<div class="slider-row"><label>Radius</label><input id="radius" type="range" min="10" max="100" value="80"><span id="r-out">80</span></div>
+<p class="r-caption">Radius is the distance from the center of the circle out to its edge. Every other measurement below is derived from it.</p>
 
-  <div class="row">
-    <svg width="220" height="220" viewBox="0 0 220 220" style="flex-shrink:0;">
-      <circle id="circ" cx="110" cy="110" r="80" fill="none" stroke="#7f77dd" stroke-width="2"/>
-      <line id="rline" x1="110" y1="110" x2="190" y2="110" stroke="#e6e6e4" stroke-width="1.5"/>
-      <circle cx="110" cy="110" r="3" fill="#e6e6e4"/>
-      <g id="ticks"></g>
-    </svg>
-    <div style="flex:1; min-width:220px;">
-      <div class="grid">
-        <div class="stat"><p>Diameter</p><p id="d-out">160</p></div>
-        <div class="stat"><p>Circumference</p><p id="c-out">502.65</p></div>
-        <div class="stat span2"><p>Area</p><p id="a-out">20106.19</p></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="slider-row">
-    <label>Radius</label>
-    <input type="range" min="10" max="100" step="1" value="80" id="radius"/>
-    <span id="r-out">80</span>
-  </div>
-  <p class="r-caption">Radius is the distance from the center of the circle out to its edge. Every other measurement below is derived from it.</p>
-
-  <div class="formulas">
-    <p>Formulas</p>
-    <ul>
-      <li>C = 2πr</li>
-      <li>d = 2r</li>
-      <li>C = πd</li>
-      <li>A = πr²</li>
-    </ul>
-  </div>
-  <p class="formula-key">
-    <b>r</b> = radius (center to edge).<br>
-    <b>d</b> = diameter, the distance straight across through the center — always twice the radius.<br>
-    <b>C</b> = circumference, the distance all the way around the circle.<br>
-    <b>A</b> = area, the space enclosed inside the circle.<br>
-    <b>π</b> ("pi") = the ratio of circumference to diameter — the same fixed number, ≈3.14159, for every circle regardless of size.<br>
-    <b>r²</b> means r multiplied by itself (r × r).
-  </p>
-
-  <div class="pi-explain">
-    <p>What π means</p>
-    <p class="pi-value">π ≈ 3.14159265</p>
-    <p class="pi-line">Lay the diameter (<span id="pd-out">160</span>) along the curved edge of the circle, over and over. It takes <span id="pi-out">3.14159</span> lengths to go all the way around — that ratio is π, and it's the same for every circle, no matter the size. The orange marks on the circle show where each diameter-length ends.</p>
-  </div>
+<div class="info-grid">
+<div>
+<div class="formulas">
+<p>Formulas</p>
+<ul><li>C = 2πr</li><li>d = 2r</li><li>C = πd</li><li>A = πr²</li></ul>
 </div>
+<p class="formula-key"><b>r</b> = radius (center to edge).<br><b>d</b> = diameter through the center.<br><b>C</b> = circumference around the circle.<br><b>A</b> = area inside the circle.<br><b>π</b> ≈ 3.14159, the ratio of circumference to diameter.<br><b>r²</b> = r × r.</p>
+</div>
+
+<div class="pi-explain">
+<p>What π means</p>
+<p class="pi-value">π ≈ 3.14159265</p>
+<p class="pi-line">Lay the diameter (<span id="pd-out">160</span>) along the curved edge of the circle. It takes <span id="pi-out">3.14159</span> diameter lengths to travel once around the circle. The orange marks indicate where each diameter-length ends.</p>
+</div>
+</div>
+</div>
+
 <script>
-const slider = document.getElementById('radius');
-const circ = document.getElementById('circ');
-const rline = document.getElementById('rline');
-const ticks = document.getElementById('ticks');
-const svgNS = 'http://www.w3.org/2000/svg';
-function update(r) {
-  const scale = 80 / 100;
-  const drawR = r * scale;
-  circ.setAttribute('r', drawR);
-  rline.setAttribute('x2', 110 + drawR);
-  document.getElementById('r-out').textContent = r;
-  document.getElementById('d-out').textContent = (r*2).toFixed(0);
-  document.getElementById('c-out').textContent = (2*Math.PI*r).toFixed(2);
-  document.getElementById('a-out').textContent = (Math.PI*r*r).toFixed(2);
-  document.getElementById('pd-out').textContent = (r*2).toFixed(0);
-  document.getElementById('pi-out').textContent = Math.PI.toFixed(5);
-  ticks.innerHTML = '';
-  for (let i = 1; i <= 3; i++) {
-    const angle = i * 2 - Math.PI / 2;
-    const x1 = 110 + drawR * Math.cos(angle);
-    const y1 = 110 + drawR * Math.sin(angle);
-    const x2 = 110 + (drawR + 10) * Math.cos(angle);
-    const y2 = 110 + (drawR + 10) * Math.sin(angle);
-    const line = document.createElementNS(svgNS, 'line');
-    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-    line.setAttribute('stroke', '#f0997b');
-    line.setAttribute('stroke-width', '2');
-    ticks.appendChild(line);
-  }
+const slider=document.getElementById('radius'),circ=document.getElementById('circ'),rline=document.getElementById('rline'),ticks=document.getElementById('ticks'),svgNS='http://www.w3.org/2000/svg';
+function update(r){
+const drawR=r*.8;
+circ.setAttribute('r',drawR);rline.setAttribute('x2',110+drawR);
+r_out.textContent=r;d_out.textContent=(r*2).toFixed(0);
+c_out.textContent=(2*Math.PI*r).toFixed(2);
+a_out.textContent=(Math.PI*r*r).toFixed(2);
+pd_out.textContent=(r*2).toFixed(0);pi_out.textContent=Math.PI.toFixed(5);
+ticks.innerHTML='';
+for(let i=1;i<=3;i++){const a=i*2-Math.PI/2,x1=110+drawR*Math.cos(a),y1=110+drawR*Math.sin(a),x2=110+(drawR+10)*Math.cos(a),y2=110+(drawR+10)*Math.sin(a);const l=document.createElementNS(svgNS,'line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);l.setAttribute('stroke','#f0997b');l.setAttribute('stroke-width','2');ticks.appendChild(l);}
 }
-slider.addEventListener('input', e => update(Number(e.target.value)));
-update(80);
+slider.addEventListener('input',e=>update(+e.target.value));update(80);
 </script>
-</body>
-</html>
+</body></html>
