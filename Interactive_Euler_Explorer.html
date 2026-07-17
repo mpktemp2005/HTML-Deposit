@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>e explorer: compounding growth toward Euler's number</title>
+<style>
+  body {
+    margin: 0;
+    padding: 32px;
+    background: #191919;
+    color: #e6e6e4;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; }
+  .intro { font-size: 14px; line-height: 1.6; color: #d0d0ce; margin: 0 0 20px; }
+  .chart-card { background: #2f2f2f; border-radius: 8px; padding: 20px; margin-bottom: 8px; }
+  svg { width: 100%; height: auto; display: block; }
+  .tick-label { font-size: 11px; fill: #9b9b9b; }
+  .chart-caption { font-size: 13px; color: #9b9b9b; margin: 8px 0 20px; line-height: 1.5; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin: 20px 0 6px; }
+  label { font-size: 14px; color: #9b9b9b; min-width: 90px; }
+  input[type=range] { flex: 1; accent-color: #f0997b; }
+  #n-out { font-size: 14px; font-weight: 600; min-width: 70px; text-align: right; }
+  .n-caption { font-size: 13px; color: #9b9b9b; margin: 0 0 20px; line-height: 1.5; }
+  .stat { background: #2f2f2f; border-radius: 8px; padding: 16px; }
+  .stat p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 4px; }
+  .stat p:last-child { font-size: 20px; font-weight: 600; margin: 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .grid .span2 { grid-column: span 2; }
+  .formulas { background: #2f2f2f; border-radius: 8px; padding: 16px 20px; margin-bottom: 8px; }
+  .formulas p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 10px; }
+  .formulas ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+  .formulas li { font-size: 15px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .formula-key { font-size: 13px; color: #9b9b9b; line-height: 1.8; margin: 0 0 20px; padding-left: 4px; }
+  .formula-key b { color: #e6e6e4; font-weight: 600; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .e-explain { background: #2f2f2f; border-radius: 8px; padding: 16px 20px; }
+  .e-explain p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 8px; }
+  .e-explain .e-value { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
+  .e-explain .e-line { font-size: 14px; line-height: 1.6; margin: 0; color: #d0d0ce; }
+  .e-explain .e-line span { font-weight: 600; color: #e6e6e4; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="intro">e (Euler's number, ≈2.71828) is a special number that shows up whenever something grows continuously — a little bit is added back in constantly, and that new bit immediately starts growing too. This tool shows how e emerges from compound growth.</p>
+
+  <div class="chart-card">
+    <svg viewBox="0 0 460 250" id="chart">
+      <line x1="20" y1="20" x2="440" y2="20" stroke="#5a5a58" stroke-width="1" stroke-dasharray="4 4"/>
+      <text class="tick-label" x="24" y="14">e ≈ 2.71828</text>
+      <g id="bars"></g>
+      <g id="labels"></g>
+    </svg>
+  </div>
+  <p class="chart-caption">Each bar is $1 compounded n times over one period. More frequent compounding pushes the result higher, but it never goes past the dashed line — that ceiling is e.</p>
+
+  <div class="slider-row">
+    <label>n (periods)</label>
+    <input type="range" min="0" max="6" step="1" value="0" id="nslider"/>
+    <span id="n-out">n = 1</span>
+  </div>
+  <p class="n-caption">n is how many times growth compounds over one period — e.g. n = 12 means monthly compounding, n = 365 means daily. Higher n means growth is added back in smaller, more frequent steps.</p>
+
+  <div class="grid">
+    <div class="stat"><p>Formula value</p><p id="val-out">2.00000</p></div>
+    <div class="stat"><p>Distance from e</p><p id="diff-out">0.71828</p></div>
+    <div class="stat span2"><p>$1 grows to</p><p id="money-out">$2.00</p></div>
+  </div>
+
+  <div class="formulas">
+    <p>Formulas</p>
+    <ul>
+      <li>e = lim (1+1/n)ⁿ</li>
+      <li>e ≈ 2.71828</li>
+      <li>d/dx eˣ = eˣ</li>
+      <li>n → ∞</li>
+    </ul>
+  </div>
+  <p class="formula-key">
+    <b>lim</b> ("limit") means: the value this expression settles at as n keeps growing, without n ever actually reaching infinity.<br>
+    <b>n → ∞</b> ("n approaches infinity") is what's changing in that limit — n climbing forever.<br>
+    <b>d/dx eˣ = eˣ</b> means: at any point on the curve y = eˣ, the curve's slope (rate of change) equals the curve's own height. That self-matching property is unique to e.
+  </p>
+
+  <div class="e-explain">
+    <p>What e means</p>
+    <p class="e-value">e ≈ 2.71828182</p>
+    <p class="e-line">Take $1 and compound growth <span id="n-echo">1</span> time(s) over one period. As you compound more and more often — daily, hourly, every instant — the result stops climbing much further and settles at e. It's the number continuous growth converges to, which is why it shows up anywhere something grows smoothly at a rate proportional to its own size.</p>
+  </div>
+</div>
+<script>
+const presets = [
+  { n: 1, label: '1' },
+  { n: 2, label: '2' },
+  { n: 4, label: '4' },
+  { n: 12, label: '12' },
+  { n: 365, label: '365' },
+  { n: 8760, label: '8760' },
+  { n: Infinity, label: '∞' }
+];
+const E = Math.E;
+const svgNS = 'http://www.w3.org/2000/svg';
+const barsG = document.getElementById('bars');
+const labelsG = document.getElementById('labels');
+const slider = document.getElementById('nslider');
+
+function valueFor(n) {
+  return n === Infinity ? E : Math.pow(1 + 1 / n, n);
+}
+function heightFor(v) {
+  const minV = 2.0, maxV = E;
+  return 30 + ((v - minV) / (maxV - minV)) * 160;
+}
+
+const barWidth = 40, gap = 14, startX = 20, baseline = 220;
+function drawBars(activeIdx) {
+  barsG.innerHTML = '';
+  labelsG.innerHTML = '';
+  presets.forEach((p, i) => {
+    const v = valueFor(p.n);
+    const h = heightFor(v);
+    const x = startX + i * (barWidth + gap);
+    const rect = document.createElementNS(svgNS, 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', baseline - h);
+    rect.setAttribute('width', barWidth);
+    rect.setAttribute('height', h);
+    rect.setAttribute('rx', 4);
+    rect.setAttribute('fill', i === activeIdx ? '#f0997b' : '#5a5a58');
+    barsG.appendChild(rect);
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', x + barWidth / 2);
+    text.setAttribute('y', 238);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('class', 'tick-label');
+    text.textContent = 'n=' + p.label;
+    labelsG.appendChild(text);
+  });
+}
+
+function update(idx) {
+  const p = presets[idx];
+  const v = valueFor(p.n);
+  drawBars(idx);
+  document.getElementById('n-out').textContent = p.n === Infinity ? 'n = ∞' : 'n = ' + p.n;
+  document.getElementById('val-out').textContent = v.toFixed(5);
+  document.getElementById('diff-out').textContent = (E - v).toFixed(5);
+  document.getElementById('money-out').textContent = '$' + v.toFixed(2);
+  document.getElementById('n-echo').textContent = p.n === Infinity ? 'infinitely many' : p.n.toLocaleString();
+}
+
+slider.addEventListener('input', e => update(Number(e.target.value)));
+update(0);
+</script>
+</body>
+</html>
