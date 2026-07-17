@@ -11,21 +11,26 @@
     color: #e6e6e4;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   }
-  .wrap { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; max-width: 560px; margin: 0 auto; }
+  .wrap { max-width: 560px; margin: 0 auto; }
+  .intro { font-size: 14px; line-height: 1.6; color: #d0d0ce; margin: 0 0 20px; }
+  .row { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
   .stat { background: #2f2f2f; border-radius: 8px; padding: 16px; }
   .stat p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 4px; }
   .stat p:last-child { font-size: 20px; font-weight: 600; margin: 0; }
   .grid { flex: 1; min-width: 220px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .grid .span2 { grid-column: span 2; }
   label { font-size: 14px; color: #9b9b9b; min-width: 50px; }
-  input[type=range] { flex: 1; accent-color: #9b9b9b; }
+  input[type=range] { flex: 1; accent-color: #7f77dd; }
   #r-out { font-size: 14px; font-weight: 600; min-width: 40px; text-align: right; }
-  .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-  .formulas { max-width: 560px; margin: 24px auto 0; background: #2f2f2f; border-radius: 8px; padding: 16px 20px; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin: 20px 0 6px; }
+  .r-caption { font-size: 13px; color: #9b9b9b; margin: 0 0 20px; line-height: 1.5; }
+  .formulas { max-width: 560px; margin: 0 auto 8px; background: #2f2f2f; border-radius: 8px; padding: 16px 20px; }
   .formulas p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 10px; }
   .formulas ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
   .formulas li { font-size: 15px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
-  .pi-explain { max-width: 560px; margin: 16px auto 0; background: #2f2f2f; border-radius: 8px; padding: 16px 20px; }
+  .formula-key { font-size: 13px; color: #9b9b9b; line-height: 1.8; margin: 0 0 20px; padding-left: 4px; }
+  .formula-key b { color: #e6e6e4; font-weight: 600; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .pi-explain { max-width: 560px; margin: 0 auto; background: #2f2f2f; border-radius: 8px; padding: 16px 20px; }
   .pi-explain p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 8px; }
   .pi-explain .pi-value { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
   .pi-explain .pi-line { font-size: 14px; line-height: 1.6; margin: 0; color: #d0d0ce; }
@@ -34,39 +39,54 @@
 </head>
 <body>
 <div class="wrap">
-  <svg width="220" height="220" viewBox="0 0 220 220" style="flex-shrink:0;">
-    <circle id="circ" cx="110" cy="110" r="80" fill="none" stroke="#7f77dd" stroke-width="2"/>
-    <line id="rline" x1="110" y1="110" x2="190" y2="110" stroke="#e6e6e4" stroke-width="1.5"/>
-    <circle cx="110" cy="110" r="3" fill="#e6e6e4"/>
-    <g id="ticks"></g>
-  </svg>
-  <div style="flex:1; min-width:220px;">
-    <div class="slider-row">
-      <label>Radius</label>
-      <input type="range" min="10" max="100" step="1" value="80" id="radius"/>
-      <span id="r-out">80</span>
-    </div>
-    <div class="grid">
-      <div class="stat"><p>Diameter</p><p id="d-out">160</p></div>
-      <div class="stat"><p>Circumference</p><p id="c-out">502.65</p></div>
-      <div class="stat span2"><p>Area</p><p id="a-out">20106.19</p></div>
+  <p class="intro">A circle can be described by just a few measurements. This tool lets you resize a circle and watch how those measurements relate to each other, and to π (pi).</p>
+
+  <div class="row">
+    <svg width="220" height="220" viewBox="0 0 220 220" style="flex-shrink:0;">
+      <circle id="circ" cx="110" cy="110" r="80" fill="none" stroke="#7f77dd" stroke-width="2"/>
+      <line id="rline" x1="110" y1="110" x2="190" y2="110" stroke="#e6e6e4" stroke-width="1.5"/>
+      <circle cx="110" cy="110" r="3" fill="#e6e6e4"/>
+      <g id="ticks"></g>
+    </svg>
+    <div style="flex:1; min-width:220px;">
+      <div class="grid">
+        <div class="stat"><p>Diameter</p><p id="d-out">160</p></div>
+        <div class="stat"><p>Circumference</p><p id="c-out">502.65</p></div>
+        <div class="stat span2"><p>Area</p><p id="a-out">20106.19</p></div>
+      </div>
     </div>
   </div>
-</div>
-<div class="formulas">
-  <p>Formulas</p>
-  <ul>
-    <li>C = 2πr</li>
-    <li>d = 2r</li>
-    <li>C = πd</li>
-    <li>A = πr²</li>
-    <li>π ≈ 3.14159</li>
-  </ul>
-</div>
-<div class="pi-explain">
-  <p>What π means</p>
-  <p class="pi-value">π ≈ 3.14159265</p>
-  <p class="pi-line">Lay the diameter (<span id="pd-out">160</span>) along the curved edge of the circle, over and over. It takes <span id="pi-out">3.14159</span> lengths to go all the way around — that ratio is π, and it's the same for every circle, no matter the size.</p>
+
+  <div class="slider-row">
+    <label>Radius</label>
+    <input type="range" min="10" max="100" step="1" value="80" id="radius"/>
+    <span id="r-out">80</span>
+  </div>
+  <p class="r-caption">Radius is the distance from the center of the circle out to its edge. Every other measurement below is derived from it.</p>
+
+  <div class="formulas">
+    <p>Formulas</p>
+    <ul>
+      <li>C = 2πr</li>
+      <li>d = 2r</li>
+      <li>C = πd</li>
+      <li>A = πr²</li>
+    </ul>
+  </div>
+  <p class="formula-key">
+    <b>r</b> = radius (center to edge).<br>
+    <b>d</b> = diameter, the distance straight across through the center — always twice the radius.<br>
+    <b>C</b> = circumference, the distance all the way around the circle.<br>
+    <b>A</b> = area, the space enclosed inside the circle.<br>
+    <b>π</b> ("pi") = the ratio of circumference to diameter — the same fixed number, ≈3.14159, for every circle regardless of size.<br>
+    <b>r²</b> means r multiplied by itself (r × r).
+  </p>
+
+  <div class="pi-explain">
+    <p>What π means</p>
+    <p class="pi-value">π ≈ 3.14159265</p>
+    <p class="pi-line">Lay the diameter (<span id="pd-out">160</span>) along the curved edge of the circle, over and over. It takes <span id="pi-out">3.14159</span> lengths to go all the way around — that ratio is π, and it's the same for every circle, no matter the size. The orange marks on the circle show where each diameter-length ends.</p>
+  </div>
 </div>
 <script>
 const slider = document.getElementById('radius');
