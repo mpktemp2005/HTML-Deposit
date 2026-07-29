@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>c</title>
+<style>
+  body {
+    margin: 0;
+    padding: 32px;
+    background: #191919;
+    color: #e6e6e4;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 580px; margin: 0 auto; }
+  .intro { font-size: 14px; line-height: 1.6; color: #d0d0ce; margin: 0 0 20px; }
+  .row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 8px; }
+  .plane-card { background: #2f2f2f; border-radius: 8px; padding: 12px; flex-shrink: 0; }
+  .stat { background: #2f2f2f; border-radius: 8px; padding: 16px; }
+  .stat p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 4px; }
+  .stat p:last-child { font-size: 18px; font-weight: 600; margin: 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .grid-stats { flex: 1; min-width: 220px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-stats .span2 { grid-column: span 2; }
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+  .presets button {
+    background: #2f2f2f; color: #e6e6e4; border: 1px solid #4a4a48; border-radius: 6px;
+    padding: 6px 12px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .presets button:hover { background: #3a3a38; }
+  label { font-size: 14px; color: #9b9b9b; min-width: 24px; }
+  input[type=range] { flex: 1; }
+  .a-slide, .b-slide { accent-color: #5fb0d6; }
+  .c-slide, .d-slide { accent-color: #7f77dd; }
+  .out-val { font-size: 14px; font-weight: 600; min-width: 40px; text-align: right; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin: 10px 0; }
+  .slider-col { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 220px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: #9b9b9b; margin: 16px 0 20px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 12px; height: 3px; display: inline-block; border-radius: 2px; }
+  .formulas { background: #2f2f2f; border-radius: 8px; padding: 16px 20px; margin-bottom: 8px; }
+  .formulas p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 10px; }
+  .formulas ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+  .formulas li { font-size: 14px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .formula-key { font-size: 13px; color: #9b9b9b; line-height: 1.8; margin: 0 0 20px; padding-left: 4px; }
+  .formula-key b { color: #e6e6e4; font-weight: 600; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .m-explain { background: #2f2f2f; border-radius: 8px; padding: 16px 20px; }
+  .m-explain p:first-child { font-size: 13px; color: #9b9b9b; margin: 0 0 8px; }
+  .m-explain .m-value { font-size: 15px; font-weight: 600; margin: 0 0 10px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .m-explain .m-line { font-size: 14px; line-height: 1.6; margin: 0; color: #d0d0ce; }
+  .m-explain .m-line span { font-weight: 600; color: #e6e6e4; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="intro">A matrix is a set of instructions for stretching, rotating, flipping, or squishing space. It's completely determined by one thing: where it sends the two basis vectors. Everything else on the grid follows along.</p>
+
+  <div class="row">
+    <div class="plane-card">
+      <svg width="240" height="240" viewBox="0 0 340 340">
+        <defs>
+          <marker id="arrow-teal" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#5fb0d6"/>
+          </marker>
+          <marker id="arrow-violet" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#7f77dd"/>
+          </marker>
+          <marker id="arrow-amber" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 Z" fill="#f0c25f"/>
+          </marker>
+        </defs>
+        <g id="static-grid"></g>
+        <g id="xformed-grid"></g>
+        <line x1="0" y1="170" x2="340" y2="170" stroke="#5a5a58" stroke-width="1"/>
+        <line x1="170" y1="0" x2="170" y2="340" stroke="#5a5a58" stroke-width="1"/>
+        <line id="v-orig" x1="170" y1="170" x2="195" y2="145" stroke="#6b6b68" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <line id="ihat" x1="170" y1="170" x2="195" y2="170" stroke="#5fb0d6" stroke-width="2.5" marker-end="url(#arrow-teal)"/>
+        <line id="jhat" x1="170" y1="170" x2="170" y2="145" stroke="#7f77dd" stroke-width="2.5" marker-end="url(#arrow-violet)"/>
+        <line id="v-line" x1="170" y1="170" x2="195" y2="145" stroke="#f0c25f" stroke-width="2.5" marker-end="url(#arrow-amber)"/>
+        <circle cx="170" cy="170" r="3" fill="#e6e6e4"/>
+      </svg>
+    </div>
+    <div class="grid-stats">
+      <div class="stat"><p>Matrix M</p><p id="matrix-out">[1 0 / 0 1]</p></div>
+      <div class="stat"><p>det(M)</p><p id="det-out">1.00</p></div>
+      <div class="stat"><p>î → </p><p id="itip-out">(1, 0)</p></div>
+      <div class="stat"><p>ĵ → </p><p id="jtip-out">(0, 1)</p></div>
+      <div class="stat span2"><p>sample v = (1,1) → Mv</p><p id="mv-out">(1, 1)</p></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="swatch" style="background:#5fb0d6"></i>î → column 1 of M</span>
+    <span><i class="swatch" style="background:#7f77dd"></i>ĵ → column 2 of M</span>
+    <span><i class="swatch" style="background:#f0c25f"></i>sample vector v → Mv</span>
+  </div>
+
+  <div class="presets">
+    <button data-a="1" data-b="0" data-c="0" data-d="1">Identity</button>
+    <button data-a="0" data-b="1" data-c="-1" data-d="0">Rotate 90°</button>
+    <button data-a="2" data-b="0" data-c="0" data-d="2">Scale ×2</button>
+    <button data-a="1" data-b="0" data-c="1" data-d="1">Shear</button>
+    <button data-a="1" data-b="0" data-c="0" data-d="-1">Reflect (x-axis)</button>
+  </div>
+
+  <div class="slider-row">
+    <label>a</label>
+    <input type="range" class="a-slide" min="-3" max="3" step="0.5" value="1" id="aslider"/>
+    <span class="out-val" id="a-live">1</span>
+  </div>
+  <div class="slider-row">
+    <label>b</label>
+    <input type="range" class="b-slide" min="-3" max="3" step="0.5" value="0" id="bslider"/>
+    <span class="out-val" id="b-live">0</span>
+  </div>
+  <div class="slider-row">
+    <label>c</label>
+    <input type="range" class="c-slide" min="-3" max="3" step="0.5" value="0" id="cslider"/>
+    <span class="out-val" id="c-live">0</span>
+  </div>
+  <div class="slider-row">
+    <label>d</label>
+    <input type="range" class="d-slide" min="-3" max="3" step="0.5" value="1" id="dslider"/>
+    <span class="out-val" id="d-live">1</span>
+  </div>
+
+  <div class="formulas">
+    <p>Formulas</p>
+    <ul>
+      <li>M = [a c / b d]</li>
+      <li>Mv = (ax+cy, bx+dy)</li>
+      <li>det(M) = ad − bc</li>
+      <li>|det(M)| = area scale</li>
+    </ul>
+  </div>
+  <p class="formula-key">
+    <b>M = [a c / b d]</b> is a 2×2 matrix written column by column: the first column (a, b) is where î lands after the transformation, the second column (c, d) is where ĵ lands.<br>
+    <b>Mv = (ax+cy, bx+dy)</b> is how you apply M to any vector v = (x, y) — it's just x copies of the first column plus y copies of the second column, added together.<br>
+    <b>det(M)</b> ("determinant") is a single number telling you how the transformation scales area. If det = 2, every shape doubles in area. If det is negative, the plane gets flipped over (like a mirror) in addition to being scaled.<br>
+    <b>area scale</b> means the absolute value of det(M) — how much bigger or smaller areas become, ignoring any flip.
+  </p>
+
+  <div class="m-explain">
+    <p>What a linear transformation means</p>
+    <p class="m-value" id="m-headline">M sends î → (1, 0) and ĵ → (0, 1)</p>
+    <p class="m-line">A transformation is called <span>linear</span> because it keeps grid lines straight, evenly spaced, and parallel, and it always leaves the origin fixed. Since every vector is just some amount of î plus some amount of ĵ, knowing where those two land is enough to know where every single point on the plane ends up — that's the whole grid warping above.</p>
+  </div>
+</div>
+<script>
+const svgNS = 'http://www.w3.org/2000/svg';
+const CX = 170, CY = 170, UNIT = 25;
+const staticGrid = document.getElementById('static-grid');
+const xformedGrid = document.getElementById('xformed-grid');
+
+function toPx(x, y) { return { px: CX + x * UNIT, py: CY - y * UNIT }; }
+
+// static reference grid, drawn once
+for (let i = -6; i <= 6; i++) {
+  const v = document.createElementNS(svgNS, 'line');
+  v.setAttribute('x1', CX + i * UNIT); v.setAttribute('y1', 0);
+  v.setAttribute('x2', CX + i * UNIT); v.setAttribute('y2', 340);
+  v.setAttribute('stroke', '#3a3a38'); v.setAttribute('stroke-width', '1');
+  staticGrid.appendChild(v);
+  const h = document.createElementNS(svgNS, 'line');
+  h.setAttribute('x1', 0); h.setAttribute('y1', CY + i * UNIT);
+  h.setAttribute('x2', 340); h.setAttribute('y2', CY + i * UNIT);
+  h.setAttribute('stroke', '#3a3a38'); h.setAttribute('stroke-width', '1');
+  staticGrid.appendChild(h);
+}
+
+const aSlider = document.getElementById('aslider');
+const bSlider = document.getElementById('bslider');
+const cSlider = document.getElementById('cslider');
+const dSlider = document.getElementById('dslider');
+const ihat = document.getElementById('ihat');
+const jhat = document.getElementById('jhat');
+const vLine = document.getElementById('v-line');
+
+function drawTransformedGrid(a, b, c, d) {
+  xformedGrid.innerHTML = '';
+  const span = 6;
+  for (let i = -3; i <= 3; i++) {
+    // image of vertical line x = i: passes through i*(a,b), direction (c,d)
+    const p1 = toPx(i * a - span * c, i * b - span * d);
+    const p2 = toPx(i * a + span * c, i * b + span * d);
+    const line1 = document.createElementNS(svgNS, 'line');
+    line1.setAttribute('x1', p1.px); line1.setAttribute('y1', p1.py);
+    line1.setAttribute('x2', p2.px); line1.setAttribute('y2', p2.py);
+    line1.setAttribute('stroke', '#5fb0d6'); line1.setAttribute('stroke-width', '1'); line1.setAttribute('opacity', '0.45');
+    xformedGrid.appendChild(line1);
+
+    // image of horizontal line y = i: passes through i*(c,d), direction (a,b)
+    const p3 = toPx(i * c - span * a, i * d - span * b);
+    const p4 = toPx(i * c + span * a, i * d + span * b);
+    const line2 = document.createElementNS(svgNS, 'line');
+    line2.setAttribute('x1', p3.px); line2.setAttribute('y1', p3.py);
+    line2.setAttribute('x2', p4.px); line2.setAttribute('y2', p4.py);
+    line2.setAttribute('stroke', '#7f77dd'); line2.setAttribute('stroke-width', '1'); line2.setAttribute('opacity', '0.45');
+    xformedGrid.appendChild(line2);
+  }
+}
+
+function update() {
+  const a = Number(aSlider.value), b = Number(bSlider.value);
+  const c = Number(cSlider.value), d = Number(dSlider.value);
+
+  drawTransformedGrid(a, b, c, d);
+
+  const origin = toPx(0, 0);
+  const iTip = toPx(a, b);
+  const jTip = toPx(c, d);
+  ihat.setAttribute('x1', origin.px); ihat.setAttribute('y1', origin.py);
+  ihat.setAttribute('x2', iTip.px);   ihat.setAttribute('y2', iTip.py);
+  jhat.setAttribute('x1', origin.px); jhat.setAttribute('y1', origin.py);
+  jhat.setAttribute('x2', jTip.px);   jhat.setAttribute('y2', jTip.py);
+
+  const vx = a * 1 + c * 1, vy = b * 1 + d * 1;
+  const vTip = toPx(vx, vy);
+  vLine.setAttribute('x1', origin.px); vLine.setAttribute('y1', origin.py);
+  vLine.setAttribute('x2', vTip.px);   vLine.setAttribute('y2', vTip.py);
+
+  const det = a * d - b * c;
+
+  document.getElementById('a-live').textContent = a;
+  document.getElementById('b-live').textContent = b;
+  document.getElementById('c-live').textContent = c;
+  document.getElementById('d-live').textContent = d;
+  document.getElementById('matrix-out').textContent = '[' + a + ' ' + c + ' / ' + b + ' ' + d + ']';
+  document.getElementById('det-out').textContent = det.toFixed(2);
+  document.getElementById('itip-out').textContent = '(' + a + ', ' + b + ')';
+  document.getElementById('jtip-out').textContent = '(' + c + ', ' + d + ')';
+  document.getElementById('mv-out').textContent = '(' + vx + ', ' + vy + ')';
+  document.getElementById('m-headline').textContent = 'M sends î → (' + a + ', ' + b + ') and ĵ → (' + c + ', ' + d + ')';
+}
+
+[aSlider, bSlider, cSlider, dSlider].forEach(s => s.addEventListener('input', update));
+
+document.querySelectorAll('.presets button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    aSlider.value = btn.dataset.a;
+    bSlider.value = btn.dataset.b;
+    cSlider.value = btn.dataset.c;
+    dSlider.value = btn.dataset.d;
+    update();
+  });
+});
+
+update();
+</script>
+</body>
+</html>
